@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -35,7 +36,7 @@ fun NotesItem(
     Card(modifier = Modifier
         .fillMaxWidth()
         .height(200.dp).
-            padding(horizontal = 8.dp)
+            padding(horizontal = 9.dp, vertical = 10.dp)
         .clickable {
 //              onEvent(NoteEvent.ShowEditBox(note))
         }) {
@@ -54,7 +55,10 @@ fun NotesItem(
                Text(text = note.description, modifier = Modifier
                    .weight(2f)
                    .padding(14.dp)
-                   .fillMaxWidth(), fontSize = 18.sp)
+                   .fillMaxWidth(),
+                   fontSize = 12.sp,
+                   overflow = TextOverflow.Ellipsis
+               )
            }
            Text(text = note.editTime, fontSize = 12.sp, modifier = Modifier.padding(12.dp))
        }

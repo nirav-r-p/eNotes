@@ -18,7 +18,7 @@ interface NotesDuo {
      fun getNotesList():Flow<List<Note>>
 
     @Query("Select * from Note where title==:searchTitle")
-    suspend fun getNoteByTitle(searchTitle:String):Flow<List<Note>>
+    fun getNoteByTitle(searchTitle:String):Flow<List<Note>>
 
     @Query("Select * from Note order by editTime asc")
     fun getNoteByLatestEditTime():Flow<List<Note>>

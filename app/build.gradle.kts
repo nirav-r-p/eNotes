@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
+    id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -68,6 +70,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    //Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.1")
+
 
     //Compose dependencies
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-alpha01")
@@ -77,7 +82,7 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("com.google.dagger:hilt-android:2.44.1")
-    kapt("androidx.room:room-compiler:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
 
 
     //Dagger - Hilt
@@ -89,6 +94,12 @@ dependencies {
 
     //Room
     implementation("androidx.room:room-runtime:2.5.2")
-    kapt("androidx.room:room-compiler:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
+
+
+    implementation ("com.google.code.gson:gson:2.8.8")
+
+
+
 }

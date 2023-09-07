@@ -9,5 +9,6 @@ data class NoteState(
     val description:String="",
     val editTime:String="",
     val searchNote:String="",
-    val isAddingNote:Boolean=false
+    val isAddingNote:Boolean=false,
+    val id:Int=-1
 )

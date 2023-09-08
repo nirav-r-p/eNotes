@@ -10,7 +10,6 @@ import com.example.notestaker.user_case.NoteState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,12 +21,13 @@ class NoteViewModel(
     private val dao:NotesDuo
 ):ViewModel() {
     private val dataFormat=SimpleDateFormat("HH:mm a", Locale.getDefault())
+
     private val _state= MutableStateFlow(NoteState())
-    private val _list=dao.getNotesList()
-       .stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(),
-        emptyList()
+    private val _list= dao.getNotesList().stateIn(
+                    viewModelScope, SharingStarted.WhileSubscribed(),
+                    emptyList()
     )
+
     val state= combine(_state,_list){
             state,list->state.copy(
             notes = list.sortedByDescending { it.editTime },
@@ -75,22 +75,25 @@ class NoteViewModel(
                 }
             }
             NoteEvent.SearchNote->{
-                val search = state.value.searchNote
-                var list= emptyList<Note>()
-                if(search.isBlank()){
-                    return
-                }
-                viewModelScope.launch {
-                   list=dao.getNoteByTitle(search).first()
-                }
-                _state.update {
-                    it.copy(notes = list)
-                }
+//                val search = searchTitle
+//                var list= emptyList<Note>()
+//                if(search.isBlank()){
+//                    return
+//                }
+//                viewModelScope.launch {
+//                   list=dao.getNoteByTitle(search).first()
+//                }
+//                viewModelScope.coroutineContext.apply {
+//                    _state.update {
+//                        it.copy(notes = list)
+//                    }
+//                }
             }
             is NoteEvent.SetSearchNote -> {
                 _state.update {
                     it.copy(searchNote = event.title)
                 }
+
             }
             is NoteEvent.SetDescription -> {
                 _state.update {

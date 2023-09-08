@@ -1,16 +1,15 @@
 package com.example.notestaker.screens
 
 import android.view.ViewTreeObserver
-import androidx.activity.ComponentActivity
-import androidx.annotation.Px
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,14 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.notestaker.ui.theme.HeadingTextStyle
@@ -38,7 +34,7 @@ import com.example.notestaker.user_case.NoteEvent
 import com.example.notestaker.user_case.NoteState
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditNote(
     state: NoteState,
@@ -46,10 +42,33 @@ fun EditNote(
     navController: NavController
 ) {
 
-    var isKeyboardVisible by remember { mutableStateOf(false) }
-    var fabPosition by remember { mutableStateOf(0.dp) }
-
-
+    var isKeyboardVisible by rememberSaveable { mutableStateOf(false) }
+    var fabPosition by rememberSaveable { mutableStateOf(0.dp) }
+    var bottomPadding by rememberSaveable {
+       mutableStateOf(0.dp)
+    }
+    if (isKeyboardVisible){
+        bottomPadding =  340.dp
+        fabPosition=(-350).dp
+    }else{
+        bottomPadding =  0.dp
+        fabPosition=0.dp
+    }
+    // detect keyboard is visible or not.
+    val rootView = LocalView.current
+    DisposableEffect(rootView) {
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            val rect = android.graphics.Rect()
+            rootView.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = rootView.height
+            val keypadHeight = screenHeight - rect.bottom
+            isKeyboardVisible = keypadHeight > screenHeight * 0.15
+        }
+        rootView.viewTreeObserver.addOnGlobalLayoutListener(listener)
+        onDispose {
+            rootView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
+    }
 
     Scaffold(
       topBar = {
@@ -61,15 +80,7 @@ fun EditNote(
                  onValueChange = {onEvent(NoteEvent.SetTitle(it))},
                  modifier = Modifier
                      .fillMaxWidth()
-                     .weight(0.5f)
-                     .onFocusChanged { focusState ->
-                         if (!focusState.hasFocus) {
-                             // Keyboard is hidden, reset FAB position
-                             fabPosition = 0.dp
-                         }else{
-                             fabPosition= (-350).dp
-                         }
-                     },
+                     .weight(0.5f),
                  textStyle = HeadingTextStyle,
                  label = {
                      Text(text = "Title")
@@ -79,15 +90,17 @@ fun EditNote(
       },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                onEvent(NoteEvent.SaveNotes)
-                onEvent(NoteEvent.ResetNoteState)
-                if(state.title.isBlank() || state.description.isBlank()){
-
-                }
-                else{navController.popBackStack()}
-            },
-                modifier = Modifier.offset(y = fabPosition)) {
+                    onClick = {
+                        onEvent(NoteEvent.SaveNotes)
+                        onEvent(NoteEvent.ResetNoteState)
+                        if(state.title.isNotBlank() || state.description.isNotBlank()) {
+                            navController.popBackStack()
+                        }
+                    },
+                    modifier = Modifier
+                        .offset(y = fabPosition)
+                        .padding(4.dp)
+            ) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "Save")
             }
         }
@@ -95,29 +108,25 @@ fun EditNote(
         padding->
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(padding)) {
+            .padding(padding)
+            ) {
             TextField(
                 value = state.description,
                 onValueChange ={onEvent(NoteEvent.SetDescription(it))},
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .onFocusChanged { focusState ->
-                        isKeyboardVisible = focusState.isFocused
-                        if (!isKeyboardVisible) {
-                            fabPosition = 0.dp
-                        }else{
-                            fabPosition= (-350).dp
-                        }
-                    },
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState(), reverseScrolling = true)
+                    .padding(bottom = bottomPadding)
+                   ,
                 label = {
                     Text(text = "About")
                 },
                 placeholder = {
                     Text(text = "Write here .... ")
                 },
-                keyboardActions = KeyboardActions.Default
+                keyboardActions = KeyboardActions.Default,
             )
+
         }
     }
 }

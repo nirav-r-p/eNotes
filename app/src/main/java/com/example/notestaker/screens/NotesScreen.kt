@@ -25,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,7 +36,7 @@ import com.example.notestaker.user_case.NoteEvent
 import com.example.notestaker.user_case.NoteState
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun NotesScreen(
@@ -48,6 +47,7 @@ fun NotesScreen(
     var isGrid by rememberSaveable {
         mutableStateOf(false)
     }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {

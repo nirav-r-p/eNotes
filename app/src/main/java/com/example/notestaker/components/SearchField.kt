@@ -1,4 +1,4 @@
-package com.example.notestaker
+package com.example.notestaker.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -47,10 +47,7 @@ fun SearchField(
         },
         maxLines = 1,
         keyboardActions= KeyboardActions(onSearch = {
-
-            onEvent(NoteEvent.SetSearchNote(state.searchNote))
-
-
+            onEvent(NoteEvent.SearchNote)
         }),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
     )

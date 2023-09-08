@@ -4,11 +4,11 @@ import com.example.notestaker.data.Note
 
 
 data class NoteState(
-    val notes:List<Note> = emptyList(),
+    var notes:List<Note> = emptyList(),
     val title:String="",
     val description:String="",
     val editTime:String="",
     val searchNote:String="",
-    val isAddingNote:Boolean=false,
+    val isEditNote:Boolean=false,
     val id:Int=-1
 )

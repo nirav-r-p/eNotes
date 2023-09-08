@@ -10,6 +10,7 @@ import com.example.notestaker.user_case.NoteState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,16 +22,15 @@ class NoteViewModel(
     private val dao:NotesDuo
 ):ViewModel() {
     private val dataFormat=SimpleDateFormat("HH:mm a", Locale.getDefault())
-
     private val _state= MutableStateFlow(NoteState())
-    private val _list=
-        dao.getNotesList().stateIn(
+    private val _list=dao.getNotesList()
+       .stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(),
         emptyList()
     )
     val state= combine(_state,_list){
             state,list->state.copy(
-            notes = list,
+            notes = list.sortedByDescending { it.editTime },
     )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteState())
 
@@ -41,66 +41,56 @@ class NoteViewModel(
                     dao.deleteNote(event.note)
                 }
             }
-            NoteEvent.HideAddBox->{
-                viewModelScope.launch {
-                    _state.update {
-                        it.copy(isAddingNote = false)
-                    }
-                }
-            }
-            NoteEvent.ShowAddBox -> {
-                _state.update {
-                    it.copy(isAddingNote = true)
-                }
-            }
-
             NoteEvent.SaveNotes -> {
-                 val currentTime = Date()
+                val currentTime = Date()
                 val time:String=dataFormat.format(currentTime)
                 val title:String=state.value.title
                 val des:String=state.value.description
-                val editTime:String=time
+                val editTime= if (state.value.isEditNote){
+                    "edited at $time"
+                }else{
+                    "create at $time"
+                }
 
                 if(title.isBlank()||des.isBlank()||editTime.isBlank()){
                     return
                 }
-                val note= Note(
-                    title = title,
-                    description = des,
-                    editTime = editTime,
-                )
+                val note=if(state.value.isEditNote) {
+                    val id:Int=state.value.id
+                    Note(
+                        title = title,
+                        description = des,
+                        editTime = editTime,
+                        id = id
+                    )
+                }else{
+                    Note(
+                        title = title,
+                        description = des,
+                        editTime = editTime,
+                    )
+                }
                 viewModelScope.launch {
                     dao.upsertNote(note)
-                }
-                _state.update {
-                    it.copy(
-                        title = "",
-                        description = "",
-                        editTime = "",
-                        isAddingNote = false
-                    )
                 }
             }
             NoteEvent.SearchNote->{
                 val search = state.value.searchNote
+                var list= emptyList<Note>()
                 if(search.isBlank()){
                     return
                 }
                 viewModelScope.launch {
-                    dao.getNoteByTitle(search)
+                   list=dao.getNoteByTitle(search).first()
                 }
-
+                _state.update {
+                    it.copy(notes = list)
+                }
             }
             is NoteEvent.SetSearchNote -> {
                 _state.update {
                     it.copy(searchNote = event.title)
                 }
-            }
-            is NoteEvent.ShowEditBox->{
-               _state.update {
-                   it.copy(isAddingNote = true)
-               }
-
             }
             is NoteEvent.SetDescription -> {
                 _state.update {
@@ -122,34 +112,22 @@ class NoteViewModel(
                     )
                 }
             }
-             NoteEvent.UpdateNote->{
-                 val currentTime = Date()
-                 val time:String=dataFormat.format(currentTime)
-                val title:String=state.value.title
-                val des:String=state.value.description
-                val editTime:String=time
-                val id:Int=state.value.id
-
-                if(title.isBlank()||des.isBlank()||editTime.isBlank()){
-                    return
+            NoteEvent.ResetNoteState->{
+                _state.update {
+                    it.copy(
+                        title = "",
+                        description = "",
+                        editTime = "",
+                        isEditNote = false
+                    )
                 }
-                val note= Note(
-                    title = title,
-                    description = des,
-                    editTime = editTime,
-                    id = id
-                )
-               viewModelScope.launch {
-                   dao.upsertNote(note)
-               }
-                 _state.update {
-                     it.copy(
-                         title = "",
-                         description = "",
-                         editTime = "",
-                         isAddingNote = false
-                     )
-                 }
+            }
+            NoteEvent.IsEditMode->{
+                _state.update {
+                    it.copy(
+                        isEditNote = true
+                    )
+                }
             }
         }
     }

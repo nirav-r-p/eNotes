@@ -4,9 +4,7 @@ import com.example.notestaker.data.Note
 
 sealed interface NoteEvent{
     object SaveNotes:NoteEvent
-    object ShowAddBox:NoteEvent
-    object HideAddBox:NoteEvent
-    data class ShowEditBox(val editNote: Note):NoteEvent
+    object IsEditMode:NoteEvent
     data class SetTitle(val title:String):NoteEvent
     data class SetDescription(val description: String):NoteEvent
     data class DeleteNotes(val note: Note):NoteEvent
@@ -16,5 +14,7 @@ sealed interface NoteEvent{
 
     data class SetEditNote(val note:Note):NoteEvent
 
-    object UpdateNote:NoteEvent
+
+    object ResetNoteState:NoteEvent
+
 }

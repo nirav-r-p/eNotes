@@ -1,4 +1,4 @@
-package com.example.notestaker.Navigation
+package com.example.notestaker.navigation
 
 //  class Screens(){
 //    val firstScreen:String ="NoteScreen"

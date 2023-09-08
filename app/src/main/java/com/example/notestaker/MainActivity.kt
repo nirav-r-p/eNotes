@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
-import com.example.notestaker.Navigation.AppNavHost
+import com.example.notestaker.navigation.AppNavHost
 
 import com.example.notestaker.data.NoteDataBase
 import com.example.notestaker.model.NoteViewModel

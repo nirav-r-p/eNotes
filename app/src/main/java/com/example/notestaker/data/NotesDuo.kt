@@ -17,7 +17,7 @@ interface NotesDuo {
     @Query("Select * from Note")
      fun getNotesList():Flow<List<Note>>
 
-    @Query("Select * from Note where title==:searchTitle")
+    @Query("Select * from Note where title like :searchTitle")
     fun getNoteByTitle(searchTitle:String):Flow<List<Note>>
 
     @Query("Select * from Note order by editTime asc")

@@ -1,4 +1,4 @@
-package com.example.notestaker
+package com.example.notestaker.components
 
 
 import androidx.compose.foundation.clickable
@@ -37,6 +37,7 @@ fun NotesItem(
         .padding(horizontal = 9.dp, vertical = 10.dp)
        ) {
        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth().clickable {
+           onEvent(NoteEvent.IsEditMode)
            onEvent(NoteEvent.SetEditNote(note))
            navController.navigate("EditNote")
        }) {
@@ -59,14 +60,8 @@ fun NotesItem(
                    overflow = TextOverflow.Ellipsis
                )
            }
-           Text(text = "edit at ${note.editTime}", fontSize = 12.sp, modifier = Modifier.padding(12.dp))
+           Text(text = note.editTime, fontSize = 12.sp, modifier = Modifier.padding(12.dp))
        }
 
     }
 }
-//
-//@Preview
-//@Composable
-//fun NotesItemPreview() {
-//    NotesItem(note = Note(title = "New Project", description = "Hi jdvbjsbvjsbvjbsvbjbvjsbv", editTime = "23:8:21"),)
-//}

@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.notestaker.navigation.AppNavHost
 
-import com.example.notestaker.data.NoteDataBase
+import com.example.notestaker.data.notedata.NoteDataBase
 import com.example.notestaker.model.NoteViewModel
 import com.example.notestaker.ui.theme.NotesTakerTheme
 

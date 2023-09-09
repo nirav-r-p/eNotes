@@ -1,4 +1,4 @@
-package com.example.notestaker.data
+package com.example.notestaker.data.notedata
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -22,5 +22,9 @@ interface NotesDuo {
 
     @Query("Select * from Note order by editTime asc")
     fun getNoteByLatestEditTime():Flow<List<Note>>
+
+    @Query("Update Note set status=:status where id==:id")
+    suspend fun setPrivacyStatus(status:Boolean,id:Int)
+
 
 }

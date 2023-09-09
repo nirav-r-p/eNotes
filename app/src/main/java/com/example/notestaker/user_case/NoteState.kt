@@ -1,6 +1,6 @@
 package com.example.notestaker.user_case
 
-import com.example.notestaker.data.Note
+import com.example.notestaker.data.notedata.Note
 
 
 data class NoteState(
@@ -10,5 +10,6 @@ data class NoteState(
     val editTime:String="",
     val searchNote:String="",
     val isEditNote:Boolean=false,
-    val id:Int=-1
+    val status:Boolean=false,
+    val id:Int=0
 )

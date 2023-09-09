@@ -1,10 +1,10 @@
 package com.example.notestaker.model
 import com.google.gson.Gson
-import com.example.notestaker.data.Note
+import com.example.notestaker.data.notedata.Note
 
 interface Converter {
-    fun getObjToString(obj:Note):String
-    fun getStrToObject(str:String):Note
+    fun getObjToString(obj: Note):String
+    fun getStrToObject(str:String): Note
 }
 
 class NoteConvert:Converter{

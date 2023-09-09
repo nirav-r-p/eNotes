@@ -12,9 +12,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -22,14 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.notestaker.ui.theme.HeadingTextStyle
 import com.example.notestaker.user_case.NoteEvent
 import com.example.notestaker.user_case.NoteState
 
@@ -42,9 +44,9 @@ fun EditNote(
     navController: NavController
 ) {
 
-    var isKeyboardVisible by rememberSaveable { mutableStateOf(false) }
-    var fabPosition by rememberSaveable { mutableStateOf(0.dp) }
-    var bottomPadding by rememberSaveable {
+    var isKeyboardVisible by remember { mutableStateOf(false) }
+    var fabPosition by remember { mutableStateOf(0.dp) }
+    var bottomPadding by remember {
        mutableStateOf(0.dp)
     }
     if (isKeyboardVisible){
@@ -81,7 +83,7 @@ fun EditNote(
                  modifier = Modifier
                      .fillMaxWidth()
                      .weight(0.5f),
-                 textStyle = HeadingTextStyle,
+                 textStyle = MaterialTheme.typography.titleLarge,
                  label = {
                      Text(text = "Title")
                  },
@@ -89,7 +91,19 @@ fun EditNote(
          }
       },
         floatingActionButton = {
-            FloatingActionButton(
+            Column {
+                FloatingActionButton(
+                    onClick = {
+                        onEvent(NoteEvent.SetPrivate(status = state.status, id = state.id))
+                    },
+                    modifier = Modifier
+                        .offset(y = fabPosition)
+                        .padding(4.dp)
+                ) {
+                    Icon(
+                        imageVector = if(state.status)Icons.Default.Lock else Icons.Default.LockOpen, contentDescription = "Set Private")
+                }
+                FloatingActionButton(
                     onClick = {
                         onEvent(NoteEvent.SaveNotes)
                         onEvent(NoteEvent.ResetNoteState)
@@ -100,8 +114,9 @@ fun EditNote(
                     modifier = Modifier
                         .offset(y = fabPosition)
                         .padding(4.dp)
-            ) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = "Save")
+                ) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = "Save")
+                }
             }
         }
     ) {
@@ -116,8 +131,7 @@ fun EditNote(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState(), reverseScrolling = true)
-                    .padding(bottom = bottomPadding)
-                   ,
+                    .padding(bottom = bottomPadding),
                 label = {
                     Text(text = "About")
                 },
@@ -125,6 +139,7 @@ fun EditNote(
                     Text(text = "Write here .... ")
                 },
                 keyboardActions = KeyboardActions.Default,
+                textStyle = MaterialTheme.typography.bodyMedium
             )
 
         }

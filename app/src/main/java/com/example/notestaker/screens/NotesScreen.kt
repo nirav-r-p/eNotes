@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +48,6 @@ fun NotesScreen(
     var isGrid by rememberSaveable {
         mutableStateOf(false)
     }
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -66,8 +66,7 @@ fun NotesScreen(
                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                    Text(
                        text = "E-Note",
-                       fontSize = 36.sp,
-                       fontWeight = FontWeight.SemiBold,
+                       style = MaterialTheme.typography.titleLarge,
                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                    )
                    IconButton(onClick = {if(state.notes.size>1){ isGrid=!isGrid} }) {
@@ -95,7 +94,7 @@ fun NotesScreen(
                    contentPadding = padding,
                    content = {
                        items(state.notes) { note ->
-                           NotesItem(note = note, onEvent = onEvent, navController = navController)
+                           NotesItem(note = note, onEvent = onEvent, isPrivate = note.status,navController = navController)
                        }
                    }
                )

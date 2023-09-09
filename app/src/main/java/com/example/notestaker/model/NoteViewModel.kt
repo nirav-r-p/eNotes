@@ -3,8 +3,8 @@ package com.example.notestaker.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notestaker.data.Note
-import com.example.notestaker.data.NotesDuo
+import com.example.notestaker.data.notedata.Note
+import com.example.notestaker.data.notedata.NotesDuo
 import com.example.notestaker.user_case.NoteEvent
 import com.example.notestaker.user_case.NoteState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,7 @@ import java.util.Date
 import java.util.Locale
 
 class NoteViewModel(
-    private val dao:NotesDuo
+    private val dao: NotesDuo
 ):ViewModel() {
     private val dataFormat=SimpleDateFormat("HH:mm a", Locale.getDefault())
 
@@ -46,6 +46,7 @@ class NoteViewModel(
                 val time:String=dataFormat.format(currentTime)
                 val title:String=state.value.title
                 val des:String=state.value.description
+                val status=state.value.status
                 val editTime= if (state.value.isEditNote){
                     "edited at $time"
                 }else{
@@ -61,7 +62,8 @@ class NoteViewModel(
                         title = title,
                         description = des,
                         editTime = editTime,
-                        id = id
+                        id = id,
+                        status = status
                     )
                 }else{
                     Note(
@@ -111,7 +113,8 @@ class NoteViewModel(
                         title = event.note.title,
                         description = event.note.description,
                         editTime = event.note.editTime,
-                        id = event.note.id
+                        id = event.note.id,
+                        status = event.note.status
                     )
                 }
             }
@@ -121,7 +124,8 @@ class NoteViewModel(
                         title = "",
                         description = "",
                         editTime = "",
-                        isEditNote = false
+                        isEditNote = false,
+                        status = false
                     )
                 }
             }
@@ -130,6 +134,16 @@ class NoteViewModel(
                     it.copy(
                         isEditNote = true
                     )
+                }
+            }
+            is NoteEvent.SetPrivate->{
+                _state.update {
+                    it.copy(
+                        status = !event.status
+                    )
+                }
+                viewModelScope.launch {
+                    dao.setPrivacyStatus(state.value.status,event.id)
                 }
             }
         }

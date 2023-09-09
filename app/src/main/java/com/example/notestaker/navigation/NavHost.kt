@@ -20,14 +20,13 @@ fun AppNavHost(
     onEvent:(NoteEvent)->Unit
 ){
     val navController= rememberNavController()
-    NavHost(navController = navController, startDestination = "NoteScreen",
+    NavHost(
+        navController = navController, startDestination = "NotesScreen",
         builder ={
-        composable("NoteScreen"){
-            NotesScreen(state = state, onEvent = onEvent,navController)
+        composable("NotesScreen"){
+            NotesScreen(state = state, onEvent = onEvent, navController = navController)
         }
-        composable(
-            "EditNote",
-        ){
+        composable("EditNote"){
             EditNote(state = state, onEvent = onEvent,navController = navController)
         }
        }

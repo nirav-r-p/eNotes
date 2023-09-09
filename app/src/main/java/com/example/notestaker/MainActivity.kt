@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
             NotesTakerTheme {
                 // A surface container using the 'background' color from the theme
                 val state by viewModel.state.collectAsState()
-//                NotesScreen(state = state, onEvent = viewModel::onEvent)
                  AppNavHost(state = state,viewModel::onEvent)
             }
         }

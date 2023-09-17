@@ -1,6 +1,7 @@
 package com.example.notestaker.model
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notestaker.data.notedata.Note
@@ -10,6 +11,8 @@ import com.example.notestaker.user_case.NoteState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,9 +24,14 @@ class NoteViewModel(
     private val dao: NotesDuo
 ):ViewModel() {
     private val dataFormat=SimpleDateFormat("HH:mm a", Locale.getDefault())
-
+    private val searchString= MutableStateFlow("")
     private val _state= MutableStateFlow(NoteState())
-    private val _list= dao.getNotesList().stateIn(
+    private val _list=searchString.flatMapLatest { value -> when(value){
+        ""->
+        dao.getNotesList()
+        else -> dao.getNoteByTitle(value)
+    } }
+        .stateIn(
                     viewModelScope, SharingStarted.WhileSubscribed(),
                     emptyList()
     )
@@ -77,7 +85,7 @@ class NoteViewModel(
                 }
             }
             NoteEvent.SearchNote->{
-//                val search = searchTitle
+//                val search = state.value.searchNote
 //                var list= emptyList<Note>()
 //                if(search.isBlank()){
 //                    return
@@ -90,12 +98,18 @@ class NoteViewModel(
 //                        it.copy(notes = list)
 //                    }
 //                }
+                val value=state.value.searchNote
+
+                Log.d("Note List", "onEvent: ${_state.value.notes}")
             }
             is NoteEvent.SetSearchNote -> {
                 _state.update {
                     it.copy(searchNote = event.title)
                 }
 
+                viewModelScope.launch {
+                    searchString.value=event.title
+                }
             }
             is NoteEvent.SetDescription -> {
                 _state.update {

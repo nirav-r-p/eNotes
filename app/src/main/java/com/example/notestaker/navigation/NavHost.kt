@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.notestaker.screens.DailLogBox
 import com.example.notestaker.screens.EditNote
 import com.example.notestaker.screens.NotesScreen
 import com.example.notestaker.user_case.NoteEvent
@@ -29,6 +30,9 @@ fun AppNavHost(
         composable("EditNote"){
             EditNote(state = state, onEvent = onEvent,navController = navController)
         }
+            composable("DailLogBox"){
+                DailLogBox(state = state,navController=navController)
+            }
        }
     )
 }

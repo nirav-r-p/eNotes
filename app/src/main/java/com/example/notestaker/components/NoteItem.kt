@@ -49,7 +49,12 @@ fun NotesItem(
                 .clickable {
                     onEvent(NoteEvent.IsEditMode)
                     onEvent(NoteEvent.SetEditNote(note))
-                    navController.navigate("EditNote")
+                    if(note.status){
+                        navController.navigate("DailLogBox")
+                    }else{
+                        navController.navigate("EditNote")
+                    }
+
                 }
                 .blur(
                     if (isPrivate) 12.dp else 0.dp,

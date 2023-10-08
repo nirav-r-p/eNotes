@@ -4,14 +4,14 @@ package com.example.notestaker.model
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notestaker.data.notedata.Note
-import com.example.notestaker.data.notedata.NotesDuo
-import com.example.notestaker.user_case.NoteEvent
-import com.example.notestaker.user_case.NoteState
+import com.example.notestaker.localDataBase.notedata.Note
+import com.example.notestaker.localDataBase.notedata.NotesDuo
+import com.example.notestaker.user_case.note_case.NoteEvent
+import com.example.notestaker.user_case.note_case.NoteState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -26,10 +26,16 @@ class NoteViewModel(
     private val dataFormat=SimpleDateFormat("HH:mm a", Locale.getDefault())
     private val searchString= MutableStateFlow("")
     private val _state= MutableStateFlow(NoteState())
-    private val _list=searchString.flatMapLatest { value -> when(value){
+    @OptIn(ExperimentalCoroutinesApi::class)
+
+    private val _list=searchString.flatMapLatest {
+            value -> when(value){
         ""->
-        dao.getNotesList()
-        else -> dao.getNoteByTitle(value)
+        {
+//            Log.d("user 2", "onEvent: userid ${}")
+            dao.getNotesList()
+        }
+        else -> dao.getNoteByTitle(searchString.value)
     } }
         .stateIn(
                     viewModelScope, SharingStarted.WhileSubscribed(),
@@ -55,6 +61,7 @@ class NoteViewModel(
                 val title:String=state.value.title
                 val des:String=state.value.description
                 val status=state.value.status
+                val userId=state.value.owner
                 val editTime= if (state.value.isEditNote){
                     "edited at $time"
                 }else{
@@ -64,6 +71,7 @@ class NoteViewModel(
                 if(title.isBlank()||des.isBlank()||editTime.isBlank()){
                     return
                 }
+
                 val note=if(state.value.isEditNote) {
                     val id:Int=state.value.id
                     Note(
@@ -71,13 +79,15 @@ class NoteViewModel(
                         description = des,
                         editTime = editTime,
                         id = id,
-                        status = status
+                        status = status,
+                        userId = userId.id
                     )
                 }else{
                     Note(
                         title = title,
                         description = des,
                         editTime = editTime,
+                        userId = userId.id
                     )
                 }
                 viewModelScope.launch {
@@ -160,6 +170,17 @@ class NoteViewModel(
                     dao.setPrivacyStatus(state.value.status,event.id)
                 }
             }
+            is NoteEvent.SetUser->{
+                _state.update {
+                    it.copy(
+                        owner = event.user
+                    )
+                }
+//                userid.value=event.user.id
+//                Log.d("user", "onEvent: userid $userid")
+            }
+
+            else -> {}
         }
     }
 }

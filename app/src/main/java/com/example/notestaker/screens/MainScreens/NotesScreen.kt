@@ -1,10 +1,12 @@
-package com.example.notestaker.screens
+package com.example.notestaker.screens.MainScreens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -13,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Dehaze
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,36 +30,55 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.notestaker.components.NotesItem
 import com.example.notestaker.components.SearchField
-import com.example.notestaker.user_case.NoteEvent
-import com.example.notestaker.user_case.NoteState
+import com.example.notestaker.localDataBase.userdata.UserInfo
+import com.example.notestaker.user_case.note_case.NoteEvent
+import com.example.notestaker.user_case.note_case.NoteState
+import com.example.notestaker.user_case.userLogin.UserEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun NotesScreen(
-    state:NoteState,
+    state: NoteState,
+    userEvent:(UserEvent)->Unit,
     onEvent:(NoteEvent)->Unit,
-    navController: NavController
+    navController: NavController,
+    userData:UserInfo
 ) {
     var isGrid by rememberSaveable {
         mutableStateOf(false)
     }
+    onEvent(NoteEvent.SetUser(userData))
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onEvent(NoteEvent.ResetNoteState)
-                navController.navigate("EditNote")
+            Column {
+                FloatingActionButton(
+                    onClick = {
+                    userEvent(UserEvent.LogOut(userData.id))
+                    navController.navigate("auth"){
+                        popUpTo("note")
+                    }
+                   },
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    Icon(imageVector = Icons.Default.Logout, contentDescription = "Add Note")
+                }
+                FloatingActionButton(onClick = {
+                    onEvent(NoteEvent.ResetNoteState)
+                    navController.navigate("EditNote")
 
-            }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
+                },
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
+                }
             }
+
         }
     ) {
         padding->
@@ -93,7 +115,7 @@ fun NotesScreen(
                    modifier=Modifier.fillMaxWidth(),
                    contentPadding = padding,
                    content = {
-                       items(state.notes) { note ->
+                       items(state.notes) { note -> if(note.userId==state.owner.id)
                            NotesItem(note = note, onEvent = onEvent, isPrivate = note.status,navController = navController)
                        }
                    }

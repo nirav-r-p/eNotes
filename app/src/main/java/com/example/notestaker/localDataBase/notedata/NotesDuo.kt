@@ -1,4 +1,4 @@
-package com.example.notestaker.data.notedata
+package com.example.notestaker.localDataBase.notedata
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -14,10 +14,10 @@ interface NotesDuo {
     @Delete
     suspend fun deleteNote(note: Note)
 
-    @Query("Select * from Note")
+    @Query("Select * from Note ")
      fun getNotesList():Flow<List<Note>>
 
-    @Query("Select * from Note where title like :searchTitle")
+    @Query("Select * from Note where title like :searchTitle ")
     fun getNoteByTitle(searchTitle:String):Flow<List<Note>>
 
     @Query("Select * from Note order by editTime asc")

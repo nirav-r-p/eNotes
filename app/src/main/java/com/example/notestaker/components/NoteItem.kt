@@ -25,8 +25,8 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.notestaker.data.notedata.Note
-import com.example.notestaker.user_case.NoteEvent
+import com.example.notestaker.localDataBase.notedata.Note
+import com.example.notestaker.user_case.note_case.NoteEvent
 
 @Composable
 fun NotesItem(

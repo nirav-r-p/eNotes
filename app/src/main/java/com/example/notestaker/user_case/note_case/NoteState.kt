@@ -1,6 +1,7 @@
-package com.example.notestaker.user_case
+package com.example.notestaker.user_case.note_case
 
-import com.example.notestaker.data.notedata.Note
+import com.example.notestaker.localDataBase.notedata.Note
+import com.example.notestaker.localDataBase.userdata.UserInfo
 
 
 data class NoteState(
@@ -11,5 +12,6 @@ data class NoteState(
     val searchNote:String="",
     val isEditNote:Boolean=false,
     val status:Boolean=false,
+    var owner:UserInfo=UserInfo(),
     val id:Int=0
 )

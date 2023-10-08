@@ -14,17 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.notestaker.ui.theme.Shape
-import com.example.notestaker.user_case.NoteEvent
-import com.example.notestaker.user_case.NoteState
+import com.example.notestaker.user_case.note_case.NoteEvent
+import com.example.notestaker.user_case.note_case.NoteState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchField(
-    state:NoteState,
+    state: NoteState,
     onEvent:(NoteEvent)->Unit
 ) {
    

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NotesTaker</string>
+    <string name="title_activity_landing_screen">LandingScreen</string>
 </resources>

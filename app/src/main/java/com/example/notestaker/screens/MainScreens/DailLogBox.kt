@@ -1,4 +1,4 @@
-package com.example.notestaker.screens
+package com.example.notestaker.screens.MainScreens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,13 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import com.example.notestaker.user_case.NoteState
+import com.example.notestaker.user_case.note_case.NoteState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +35,7 @@ fun DailLogBox(
         ) {
             AlertDialog(onDismissRequest = { navController.popBackStack() }, confirmButton = {
                 Button(onClick = {
-                    if (password.trim() == "NR29") {
+                    if (password.trim() == state.owner.notePassword) {
                         navController.popBackStack()
                         navController.navigate("EditNote")
                     }
@@ -48,10 +44,14 @@ fun DailLogBox(
                     Text(text = "Done")
                 }
             }, text = {
-                OutlinedTextField(value = password, onValueChange = { password = it }, label = {
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = {
                     Text(text = "Enter Password")
-                },
-                    )
+                    },
+                    visualTransformation = PasswordVisualTransformation()
+                )
             },
                 title = {
                     Text(text = "This Notes Is Private")

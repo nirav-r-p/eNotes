@@ -73,8 +73,9 @@ fun NotesItem(
                                 .weight(1f)
                         )
                         IconButton(onClick = {
-                            if(!isPrivate)
+                            if(!isPrivate){
                                onEvent(NoteEvent.DeleteNotes(note))
+                            }
                         }) {
                             Icon(imageVector = Icons.Default.Delete, contentDescription = "")
                         }

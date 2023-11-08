@@ -1,4 +1,4 @@
-package com.example.notestaker.screens.MainScreens
+package com.example.notestaker.screens.mainScreens
 
 import android.view.ViewTreeObserver
 import androidx.compose.foundation.layout.Box
@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
@@ -50,6 +51,7 @@ fun EditNote(
     var bottomPadding by remember {
        mutableStateOf(0.dp)
     }
+
     if (isKeyboardVisible){
         bottomPadding =  340.dp
         fabPosition=(-350).dp
@@ -104,6 +106,16 @@ fun EditNote(
                 ) {
                     Icon(
                         imageVector = if(state.status)Icons.Default.Lock else Icons.Default.LockOpen, contentDescription = "Set Private")
+                }
+                FloatingActionButton(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .offset(y = fabPosition)
+                        .padding(4.dp)
+                ) {
+                    Icon(imageVector = Icons.Default.Camera, contentDescription = "Save")
                 }
                 FloatingActionButton(
                     onClick = {

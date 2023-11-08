@@ -1,4 +1,4 @@
-package com.example.notestaker.screens.MainScreens
+package com.example.notestaker.screens.mainScreens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,33 +29,36 @@ fun DailLogBox(
         mutableStateOf("")
     }
     Scaffold {
-       padding-> Box(
+       padding->
+        Box(
             modifier = Modifier
                 .fillMaxSize().padding(padding)
         ) {
-            AlertDialog(onDismissRequest = { navController.popBackStack() }, confirmButton = {
-                Button(onClick = {
-                    if (password.trim() == state.owner.notePassword) {
-                        navController.popBackStack()
-                        navController.navigate("EditNote")
-                    }
+            AlertDialog(
+                onDismissRequest = { navController.popBackStack() },
+                confirmButton = {
+                      Button(onClick = {
+                          if (password.trim() == state.owner.notePassword) {
+                              navController.popBackStack()
+                              navController.navigate("EditNote")
+                         }
 
-                }) {
-                    Text(text = "Done")
-                }
-            }, text = {
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = {
-                    Text(text = "Enter Password")
-                    },
-                    visualTransformation = PasswordVisualTransformation()
-                )
-            },
+                      }) {
+                         Text(text = "Done")
+                      }
+                },
+                text = {
+                     OutlinedTextField(
+                          value = password,
+                          onValueChange = { password = it },
+                          label = { Text(text = "Enter Password") },
+                          visualTransformation = PasswordVisualTransformation()
+                    )
+                },
                 title = {
                     Text(text = "This Notes Is Private")
-                })
+                }
+            )
         }
     }
 }

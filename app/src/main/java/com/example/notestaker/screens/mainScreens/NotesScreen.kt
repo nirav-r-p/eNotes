@@ -1,12 +1,11 @@
-package com.example.notestaker.screens.MainScreens
+package com.example.notestaker.screens.mainScreens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -31,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.notestaker.components.NotesItem
 import com.example.notestaker.components.SearchField
@@ -48,18 +48,19 @@ fun NotesScreen(
     userEvent:(UserEvent)->Unit,
     onEvent:(NoteEvent)->Unit,
     navController: NavController,
-    userData:UserInfo
 ) {
     var isGrid by rememberSaveable {
         mutableStateOf(false)
     }
-    onEvent(NoteEvent.SetUser(userData))
     Scaffold(
         floatingActionButton = {
             Column {
                 FloatingActionButton(
                     onClick = {
-                    userEvent(UserEvent.LogOut(userData.id))
+                        onEvent(NoteEvent.ClearNoteList)
+                        onEvent(NoteEvent.SetUser(UserInfo()))
+                        userEvent(UserEvent.LogOut(state.owner.id))
+
                     navController.navigate("auth"){
                         popUpTo("note")
                     }
@@ -82,7 +83,6 @@ fun NotesScreen(
         }
     ) {
         padding->
-
            Column(modifier = Modifier.fillMaxSize())
            {
                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -102,9 +102,20 @@ fun NotesScreen(
                            contentDescription = ""
                        )
                    }
-                   }
-
+               }
+               Text(
+                   text = "Hi , ${state.owner.userName} 😎",
+                   style = MaterialTheme.typography.titleLarge,
+                   modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                   fontSize = 30.sp
+               )
                SearchField(state = state, onEvent =onEvent )
+               Text(
+                   text = "Notes",
+                   style = MaterialTheme.typography.titleLarge,
+                   modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                   fontSize = 24.sp
+               )
                LazyVerticalGrid(
                    columns = GridCells.Fixed(
                        when{
@@ -115,12 +126,28 @@ fun NotesScreen(
                    modifier=Modifier.fillMaxWidth(),
                    contentPadding = padding,
                    content = {
-                       items(state.notes) { note -> if(note.userId==state.owner.id)
-                           NotesItem(note = note, onEvent = onEvent, isPrivate = note.status,navController = navController)
+                       items(state.notes)
+                       { note ->
+                           if (state.searchNote==note.title &&  state.searchNote.isNotEmpty()) {
+                               Log.d("search", "NotesScreen: ${state.searchNote}")
+                           NotesItem(
+                               note = note,
+                               onEvent = onEvent,
+                               isPrivate = note.status,
+                               navController = navController
+                           )
+                           }else{
+                               Log.d("search", "NotesScreen: ${state.searchNote}")
+                           NotesItem(
+                               note = note,
+                               onEvent = onEvent,
+                               isPrivate = note.status,
+                               navController = navController
+                           )
+                           }
                        }
                    }
                )
-
            }
     }
 }

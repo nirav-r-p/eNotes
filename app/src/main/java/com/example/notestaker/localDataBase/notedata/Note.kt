@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 import com.example.notestaker.localDataBase.userdata.UserInfo
 
 @Entity(
-
    foreignKeys = [
       ForeignKey(
          UserInfo::class,

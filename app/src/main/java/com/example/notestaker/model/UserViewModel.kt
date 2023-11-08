@@ -20,40 +20,55 @@ class UserViewModel(
 ) :ViewModel(){
     private val _state= MutableStateFlow(UserState())
     val state:StateFlow<UserState> = _state.asStateFlow()
-    private val _data = MutableLiveData<Resource<List<List<UserInfo>>>>()
-    val data: LiveData<Resource<List<List<UserInfo>>>> get() = _data
+    private val _data = MutableLiveData<Resource<List<UserInfo>>>()
+    val data: LiveData<Resource<List<UserInfo>>> get() = _data
 
     fun fetchData() {
-        var l1:List<UserInfo>
         var l2:List<UserInfo>
         viewModelScope.launch {
             try {
-                l1 = repository.fetchDataFromDatabase()
                 l2=repository.getAllUser()
-                _data.value=Resource.Success(listOf(l1,l2))
                 _state.update {
                     it.copy(
-                        loginUserList = l1,
                         userList = l2
                     )
                 }
             }catch (e:Exception){
-
+                Log.d("Error", "fetchData: ${e.message}")
             }
         }
     }
+    fun getLoginUser():Boolean{
+        var l1:List<UserInfo>
+        viewModelScope.launch {
+           try {
+               l1= repository.getLoginUser()
+               _state.update {
+                   it.copy(
+                       loginUserList = l1
+                   )
+               }
+               _data.value=Resource.Success(l1)
+           } catch (e:  Exception){
 
+           }
+
+        }
+        return state.value.loginUserList.isNotEmpty()
+    }
     fun onEvent(event: UserEvent){
       when(event){
           is UserEvent.DeleteUser -> {
               viewModelScope.launch {
                   repository.deleteUser(event.user)
+                  fetchData()
               }
-              fetchData()
+
           }
           is UserEvent.LogOut -> {
               viewModelScope.launch {
                   repository.logOutUser(event.userId)
+                  _data.value=Resource.Success(emptyList<UserInfo>())
               }
           }
           UserEvent.SaveUser ->
@@ -68,12 +83,13 @@ class UserViewModel(
                   userName = username,
                   password = pass,
                   notePassword = pass,
-                  isLogin = true
+                  isLogin = false
               )
               viewModelScope.launch {
                   repository.addUser(user)
+                  fetchData()
               }
-              fetchData()
+
           }
           is UserEvent.SetLogin -> {
               viewModelScope.launch {

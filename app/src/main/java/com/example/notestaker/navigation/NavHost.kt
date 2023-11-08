@@ -4,16 +4,19 @@ package com.example.notestaker.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.notestaker.model.NoteViewModel
 
-import com.example.notestaker.screens.MainScreens.DailLogBox
-import com.example.notestaker.screens.MainScreens.EditNote
+import com.example.notestaker.screens.mainScreens.DailLogBox
+import com.example.notestaker.screens.mainScreens.EditNote
 import com.example.notestaker.screens.login_signIn_screens.LandingScreens
-import com.example.notestaker.screens.login_signIn_screens.LoginScreen
-import com.example.notestaker.screens.MainScreens.NotesScreen
+
+import com.example.notestaker.screens.mainScreens.NotesScreen
 import com.example.notestaker.screens.login_signIn_screens.SigInScreen
 import com.example.notestaker.user_case.note_case.NoteEvent
 import com.example.notestaker.user_case.note_case.NoteState
@@ -29,7 +32,6 @@ fun AppNavHost(
     noteOnEvent:(NoteEvent)->Unit,
     userOnEvent:(UserEvent)->Unit,
     entryPoint:String,
-    onEvent:(UserEvent)->Unit
 ){
     val navController= rememberNavController()
     NavHost(
@@ -42,19 +44,17 @@ fun AppNavHost(
             composable("LandingScreen"){
                 LandingScreens(navController)
             }
-            composable("LoginPage"){
-                LoginScreen(state = state, userEvent = userOnEvent, noteEvent = noteOnEvent,navController = navController)
-            }
             composable("SigInPage"){
-                SigInScreen(onEvent = userOnEvent, navController = navController, state = state)
+                SigInScreen(userEvent = userOnEvent, navController = navController, state = state, noteEvent = noteOnEvent)
             }
         }
         navigation(
             startDestination = "NotesScreen",
             route = "note"
         ){
+            noteOnEvent(NoteEvent.GetNotes)
             composable("NotesScreen"){
-                NotesScreen(state = noteState, userEvent = onEvent ,onEvent = noteOnEvent, navController = navController, userData = noteState.owner)
+                NotesScreen(state = noteState, userEvent = userOnEvent ,onEvent = noteOnEvent, navController = navController)
             }
             composable("EditNote"){
                 EditNote(state = noteState, onEvent = noteOnEvent,navController = navController)

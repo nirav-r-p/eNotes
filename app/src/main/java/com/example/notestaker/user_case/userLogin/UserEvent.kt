@@ -8,8 +8,6 @@ sealed interface UserEvent {
 
     data class SetLogin(val userId: Int):UserEvent
 
-
-
     data class LogOut(val userId:Int):UserEvent
 
     object SaveUser:UserEvent

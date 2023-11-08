@@ -12,7 +12,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -20,7 +19,7 @@ import com.example.notestaker.ui.theme.Shape
 import com.example.notestaker.user_case.note_case.NoteEvent
 import com.example.notestaker.user_case.note_case.NoteState
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchField(
     state: NoteState,
@@ -37,7 +36,7 @@ fun SearchField(
             .fillMaxWidth()
             .padding(15.dp),
         leadingIcon = {
-            IconButton(onClick = {onEvent(NoteEvent.SearchNote)}, modifier = Modifier.padding(4.dp)) {
+            IconButton(onClick = {onEvent(NoteEvent.SetSearchNote(state.searchNote))}, modifier = Modifier.padding(4.dp)) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "")
             }
         },
@@ -46,7 +45,7 @@ fun SearchField(
         },
         maxLines = 1,
         keyboardActions= KeyboardActions(onSearch = {
-            onEvent(NoteEvent.SearchNote)
+            onEvent(NoteEvent.SetSearchNote(state.searchNote))
         }),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
     )

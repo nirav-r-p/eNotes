@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 class UserRepository(
     private val myDao: UserDao
 ) {
-    suspend fun fetchDataFromDatabase():List<UserInfo> {
+    suspend fun getLoginUser():List<UserInfo> {
         return withContext(Dispatchers.IO) {
             myDao.getLoginUser()
         }

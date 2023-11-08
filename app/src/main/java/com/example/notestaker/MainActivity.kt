@@ -3,6 +3,7 @@ package com.example.notestaker
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -26,8 +27,8 @@ import com.example.notestaker.model.Resource
 import com.example.notestaker.model.UserViewModel
 import com.example.notestaker.navigation.AppNavHost
 import com.example.notestaker.ui.theme.NotesTakerTheme
+import com.example.notestaker.userRepository.NoteRepository
 import com.example.notestaker.userRepository.UserRepository
-
 
 
 class MainActivity : ComponentActivity() {
@@ -53,11 +54,12 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object :ViewModelProvider.Factory{
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return NoteViewModel(db.dao) as T
+                    return NoteViewModel(NoteRepository(db.dao)) as T
                 }
             }
         }
     )
+    private var entryPoint="auth"
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +69,6 @@ class MainActivity : ComponentActivity() {
                 val response by viewModelUser.data.observeAsState(initial = Resource.Loading)
                 val userState by viewModelUser.state.collectAsState()
                 val state by viewModel.state.collectAsState()
-                var entryPoint="auth"
                 viewModelUser.fetchData()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -83,20 +84,19 @@ class MainActivity : ComponentActivity() {
                         is Resource.Success -> {
                             // Use resource.data to update UI with successful response
                             if(resource.data.isNotEmpty()){
-                                if(resource.data[0].isNotEmpty()){
-                                    state.owner= resource.data[0][0]
-                                    entryPoint =  "note"
-                                }
+                                val user= resource.data[0]
+                                state.owner=user
+                                Log.d("Main Activity called", "onCreate: ${state.owner}")
+                                entryPoint="note"
+
                             }
                             AppNavHost(
-                                noteState = state,
-                                noteOnEvent = viewModel::onEvent,
-                                entryPoint = entryPoint,
-                                onEvent = viewModelUser::onEvent,
-                                state = userState,
-                                userOnEvent = viewModelUser::onEvent
+                                    noteState = state,
+                                    noteOnEvent = viewModel::onEvent,
+                                    entryPoint = entryPoint,
+                                    state = userState,
+                                    userOnEvent = viewModelUser::onEvent
                             )
-
                         }
                         is Resource.Error -> {
                             // Handle error, show an error message, etc.
@@ -108,6 +108,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModelUser.getLoginUser()
     }
 
 }

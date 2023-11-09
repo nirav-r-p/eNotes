@@ -1,10 +1,10 @@
 package com.example.notestaker.model
 
-
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notestaker.localDataBase.notedata.Note
+import com.example.notestaker.localDataBase.userdata.UserInfo
 import com.example.notestaker.userRepository.NoteRepository
 import com.example.notestaker.user_case.note_case.NoteEvent
 import com.example.notestaker.user_case.note_case.NoteState
@@ -21,6 +21,9 @@ class NoteViewModel(
 ):ViewModel() {
     private val dataFormat=SimpleDateFormat("H:mm a", Locale.getDefault())
     private val _state= MutableStateFlow(NoteState())
+    private val _owner= MutableStateFlow(UserInfo())
+    var notes:List<Note> = emptyList()
+    var owner=_owner.asStateFlow()
     var state=_state.asStateFlow()
     fun onEvent(event: NoteEvent){
         when(event){
@@ -36,7 +39,7 @@ class NoteViewModel(
                 val title:String=state.value.title
                 val des:String=state.value.description
                 val status=state.value.status
-                val userId=state.value.owner
+                val userId=owner.value
                 Log.d("FKey", "onEvent: $userId")
                 val editTime= if (state.value.isEditNote){
                     "edited at $time"
@@ -72,12 +75,20 @@ class NoteViewModel(
                 }
             }
             is NoteEvent.SetSearchNote -> {
+                if (notes.isEmpty()){
+                    notes=state.value.notes
+                }
                 _state.update {
                     it.copy(
                         searchNote = event.title,
+                        notes = notes.filter {note-> note.title.contains(event.title) }
                     )
                 }
-
+                if (event.title.isBlank()){
+                    notes= emptyList()
+                    getNotes()
+                }
+                Log.d("searched note", "onEvent: ${state.value.notes} ${state.value.searchNote} ")
             }
             is NoteEvent.SetDescription -> {
                 _state.update {
@@ -136,26 +147,24 @@ class NoteViewModel(
                 }
             }
             is NoteEvent.SetUser->{
-                viewModelScope.launch{
-                    _state.update {
-                        it.copy(
-                            owner = event.user,
-                        )
-                    }
-                    Log.d("set Own", "onEvent: ${state.value.owner} event ${event.user}")
-                    getNotes()
-                }
+                    _owner.value=event.user
+                    Log.d("set Own", "onEvent: ${owner.value} event ${event.user}")
+
             }
             is NoteEvent.GetNotes->{
                 getNotes()
             }
         }
+
+    }
+    fun setLoginUser(user:UserInfo){
+        _owner.value=user
     }
     private fun getNotes(){
         viewModelScope.launch {
             try{
-                val notes:List<Note> =noteRepository.getNotes().filter { note -> note.userId==state.value.owner.id }
-                Log.d("note List and owner", "onEvent: ${state.value.owner} $notes")
+                val notes:List<Note> =noteRepository.getNotes().filter { note -> note.userId==owner.value.id }
+                Log.d("note List and owner", "onEvent: ${owner.value} $notes")
                 _state.update {
                     it.copy(
                         notes = notes.sortedByDescending {t-> t.editTime }
@@ -164,7 +173,6 @@ class NoteViewModel(
             }catch (e:Exception){
                 Log.d("error", "onEvent: $e")
             }
-
         }
     }
 }

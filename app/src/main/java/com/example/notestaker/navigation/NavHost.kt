@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.notestaker.localDataBase.userdata.UserInfo
 import com.example.notestaker.model.NoteViewModel
 
 import com.example.notestaker.screens.mainScreens.DailLogBox
@@ -28,12 +29,14 @@ import com.example.notestaker.user_case.userLogin.UserState
 @Composable
 fun AppNavHost(
     state: UserState,
-    noteState: NoteState,
+    noteViewModel: NoteViewModel,
     noteOnEvent:(NoteEvent)->Unit,
     userOnEvent:(UserEvent)->Unit,
     entryPoint:String,
+    owner:UserInfo
 ){
     val navController= rememberNavController()
+    val noteState by noteViewModel.state.collectAsState()
     NavHost(
         navController = navController, startDestination = entryPoint,
     ){
@@ -52,15 +55,15 @@ fun AppNavHost(
             startDestination = "NotesScreen",
             route = "note"
         ){
-            noteOnEvent(NoteEvent.GetNotes)
+
             composable("NotesScreen"){
-                NotesScreen(state = noteState, userEvent = userOnEvent ,onEvent = noteOnEvent, navController = navController)
+                NotesScreen(state = noteState, userEvent = userOnEvent ,onEvent = noteOnEvent, navController = navController, owner = owner)
             }
             composable("EditNote"){
                 EditNote(state = noteState, onEvent = noteOnEvent,navController = navController)
             }
             composable("DailLogBox"){
-                DailLogBox(state = noteState,navController=navController)
+                DailLogBox(state = noteState, owner = owner,navController=navController)
             }
         }
     }

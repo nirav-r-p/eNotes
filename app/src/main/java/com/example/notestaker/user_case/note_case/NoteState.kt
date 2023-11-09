@@ -12,6 +12,5 @@ data class NoteState(
     val searchNote:String="",
     val isEditNote:Boolean=false,
     val status:Boolean=false,
-    var owner:UserInfo=UserInfo(),
     val id:Int=0
 )

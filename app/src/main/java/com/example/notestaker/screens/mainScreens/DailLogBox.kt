@@ -17,12 +17,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
+import com.example.notestaker.localDataBase.userdata.UserInfo
 import com.example.notestaker.user_case.note_case.NoteState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailLogBox(
     state: NoteState,
+    owner:UserInfo,
     navController: NavController
 ) {
     var password by remember {
@@ -38,7 +40,7 @@ fun DailLogBox(
                 onDismissRequest = { navController.popBackStack() },
                 confirmButton = {
                       Button(onClick = {
-                          if (password.trim() == state.owner.notePassword) {
+                          if (password.trim() ==owner.notePassword) {
                               navController.popBackStack()
                               navController.navigate("EditNote")
                          }

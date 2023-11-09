@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,6 +36,7 @@ import androidx.navigation.NavController
 import com.example.notestaker.components.NotesItem
 import com.example.notestaker.components.SearchField
 import com.example.notestaker.localDataBase.userdata.UserInfo
+import com.example.notestaker.model.NoteViewModel
 import com.example.notestaker.user_case.note_case.NoteEvent
 import com.example.notestaker.user_case.note_case.NoteState
 import com.example.notestaker.user_case.userLogin.UserEvent
@@ -48,6 +50,7 @@ fun NotesScreen(
     userEvent:(UserEvent)->Unit,
     onEvent:(NoteEvent)->Unit,
     navController: NavController,
+    owner:UserInfo
 ) {
     var isGrid by rememberSaveable {
         mutableStateOf(false)
@@ -59,7 +62,7 @@ fun NotesScreen(
                     onClick = {
                         onEvent(NoteEvent.ClearNoteList)
                         onEvent(NoteEvent.SetUser(UserInfo()))
-                        userEvent(UserEvent.LogOut(state.owner.id))
+                        userEvent(UserEvent.LogOut(owner.id))
 
                     navController.navigate("auth"){
                         popUpTo("note")
@@ -104,7 +107,7 @@ fun NotesScreen(
                    }
                }
                Text(
-                   text = "Hi , ${state.owner.userName} 😎",
+                   text = "Hi , ${owner.userName} 😎",
                    style = MaterialTheme.typography.titleLarge,
                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                    fontSize = 30.sp
@@ -128,23 +131,12 @@ fun NotesScreen(
                    content = {
                        items(state.notes)
                        { note ->
-                           if (state.searchNote==note.title &&  state.searchNote.isNotEmpty()) {
-                               Log.d("search", "NotesScreen: ${state.searchNote}")
                            NotesItem(
                                note = note,
                                onEvent = onEvent,
                                isPrivate = note.status,
                                navController = navController
                            )
-                           }else{
-                               Log.d("search", "NotesScreen: ${state.searchNote}")
-                           NotesItem(
-                               note = note,
-                               onEvent = onEvent,
-                               isPrivate = note.status,
-                               navController = navController
-                           )
-                           }
                        }
                    }
                )

@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.notestaker.localDataBase.notedata.NoteDataBase
+import com.example.notestaker.localDataBase.userdata.UserInfo
 import com.example.notestaker.model.NoteViewModel
 import com.example.notestaker.model.Resource
 import com.example.notestaker.model.UserViewModel
@@ -29,6 +30,7 @@ import com.example.notestaker.navigation.AppNavHost
 import com.example.notestaker.ui.theme.NotesTakerTheme
 import com.example.notestaker.userRepository.NoteRepository
 import com.example.notestaker.userRepository.UserRepository
+import com.example.notestaker.user_case.note_case.NoteEvent
 
 
 class MainActivity : ComponentActivity() {
@@ -68,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 val response by viewModelUser.data.observeAsState(initial = Resource.Loading)
                 val userState by viewModelUser.state.collectAsState()
-                val state by viewModel.state.collectAsState()
+                val owner by viewModel.owner.collectAsState()
                 viewModelUser.fetchData()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -85,17 +87,19 @@ class MainActivity : ComponentActivity() {
                             // Use resource.data to update UI with successful response
                             if(resource.data.isNotEmpty()){
                                 val user= resource.data[0]
-                                state.owner=user
-                                Log.d("Main Activity called", "onCreate: ${state.owner}")
+                                viewModel.setLoginUser(user)
+                                viewModel.onEvent(NoteEvent.GetNotes)
+                                Log.d("Main Activity called", "onCreate: $owner")
                                 entryPoint="note"
 
                             }
                             AppNavHost(
-                                    noteState = state,
+                                    noteViewModel=viewModel,
                                     noteOnEvent = viewModel::onEvent,
                                     entryPoint = entryPoint,
                                     state = userState,
-                                    userOnEvent = viewModelUser::onEvent
+                                    userOnEvent = viewModelUser::onEvent,
+                                owner = owner
                             )
                         }
                         is Resource.Error -> {

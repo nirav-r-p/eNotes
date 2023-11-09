@@ -178,6 +178,7 @@ fun SigInScreen(
                                      userEvent(UserEvent.SetLogin(user.id))
                                      Log.d("User Card", "SigInScreen: User card event $user")
                                      noteEvent(NoteEvent.SetUser(user))
+                                     noteEvent(NoteEvent.GetNotes)
                                      navController.navigate("note"){
                                          popUpTo("auth")
                                      }

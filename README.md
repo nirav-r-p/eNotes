@@ -1,6 +1,6 @@
 # Note Taking App with Jetpack Compose, Kotlin, and Room Database
 
-Welcome to the Note Taking App, an elegant and efficient note-taking solution built with Jetpack Compose, Kotlin, and Room Database. This application provides a seamless note-taking experience with advanced features such as multiple user support and private note settings, all powered by a local offline Room database.
+Welcome to the Note Taking App, efficient note-taking solution built with Jetpack Compose, Kotlin, and Room Database. This application provides a seamless note-taking experience with advanced features such as multiple user support and private note settings, all powered by a local offline Room database.
 
 ## Features
 

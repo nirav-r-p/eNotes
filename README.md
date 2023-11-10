@@ -23,9 +23,13 @@ Welcome to the Note Taking App, an elegant and efficient note-taking solution bu
 
 - **Backend (Local Database):**
    - Room Database for offline, local data storage and management.
+ 
 
-
+⬇️ Download Link:
+<a href="https://drive.google.com/file/d/1PVBxMAlGjvKQ1rGmIrnv2gzM_35h6yrS/view?usp=sharing">Download APK</a>
 <img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/AppPoster.png">
+
+
 
 
 

@@ -24,15 +24,10 @@ Welcome to the Note Taking App, an elegant and efficient note-taking solution bu
 - **Backend (Local Database):**
    - Room Database for offline, local data storage and management.
 
-<p align="center">
-<img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/Landing.jpg" width="300" height="600">
-<img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/SiginScreen.jpg" width="300" height="600">
 
-</p>
-<p align="center">
-<img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/homeScreen.jpg" width="300" height="600">
-<img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/EditNoteScreen.jpg" width="300" height="600">
-</p>
+<img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/AppPoster.png">
+
+
 
 ## Contributing
 

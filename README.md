@@ -27,7 +27,6 @@ Welcome to the Note Taking App, an elegant and efficient note-taking solution bu
 <p align="center">
 <img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/Landing.jpg" width="300" height="600">
 <img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/SiginScreen.jpg" width="300" height="600">
-<img src="https://github.com/nirav-r-p/eNotes/blob/master/Screenshorts/loginScreen.jpg" width="300" height="600">
 
 </p>
 <p align="center">
